@@ -71,6 +71,12 @@
     - name: install procmail
       yum: pkg=procmail state=installed
 
+    - name: install java development files
+      yum: pkg=java-1.7.0-openjdk-devel state=present
+
+    - name: upgrade all packages
+      yum: name=* state=latest
+
     - name: Create user 
       user: 
         name: "{{ username }}"
