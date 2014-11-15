@@ -58,3 +58,11 @@
 
     # just show the instance-id
     - debug: msg="{{ hostvars[inventory_hostname]['ansible_ec2_instance_id'] }}"
+
+    # install postfix
+    - name: install postfix
+      yum: pkg=postfix state=installed
+
+    # remove sendmail (stupid shit)
+    - name: remove sendmail
+      yum: pkg=sendmail state=uninstalled
