@@ -1,0 +1,60 @@
+# Use the ec2 module to create a new host and then add
+# it to a special "ec2hosts" group.
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    instance_type: "t2.micro"
+    image: "ami-b66ed3de"
+    region: "us-east-1"
+    volumes:
+    - device_name: /dev/xvdg
+      volume_size: 20
+      delete_on_termination: True
+  tasks:
+    - name: make one instance
+      ec2: image={{ image }}
+           instance_type={{ instance_type }}
+           keypair={{ keypair }}
+           region={{ region }}
+           group={{ group }}
+           instance_tags='{"Name":"{{instance_name}}"}'
+           wait=true
+      register: ec2_host
+
+    - debug: var=ec2_host
+    - debug: var=item
+      with_items: ec2_host.instance_ids
+
+    - add_host: hostname={{ item.public_ip }} groupname=ec2hosts
+      with_items: ec2_host.instances
+
+    - name: wait for instances to listen on port:22
+      wait_for:
+        state=started
+        host={{ item.public_dns_name }}
+        port=22
+      with_items: ec2_host.instances
+
+# Connect to the node and gather facts,
+# including the instance-id. These facts
+# are added to inventory hostvars for the
+# duration of the playbook's execution
+# Typical "provisioning" tasks would go in
+# this playbook.
+
+- hosts: ec2hosts
+  gather_facts: True
+  user: ec2-user
+  sudo: True
+  tasks:
+
+    # fetch instance data from the metadata servers in ec2
+    - ec2_facts:
+
+    # show all known facts for this host
+    - debug: var=hostvars[inventory_hostname]
+
+    # just show the instance-id
+    - debug: msg="{{ hostvars[inventory_hostname]['ansible_ec2_instance_id'] }}"
