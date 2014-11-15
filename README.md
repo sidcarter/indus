@@ -15,3 +15,5 @@ A set of tools and configuration files that I end up using too often. My dotfile
 
 * .muttrc - Coming soon
 * .fetchmailrc - Coming soon
+
+Distributed under the MIT license.
