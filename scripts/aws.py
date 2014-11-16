@@ -5,7 +5,7 @@ import boto.fps
 
 conn = ec2.connect_to_region("us-east-1")
 
-def ec2_ip(status):
+def ec2_info(status):
 	instances = conn.get_only_instances()
 	for x in instances:
 		try:
@@ -16,7 +16,7 @@ def ec2_ip(status):
 			name="NoName"
 			ip_addr='none'
 			state='none'
-		if state==status:
+		if status=="all":
 			print ('Instance ID: '+x.id)
 			print ('\tName: '+ name)
 			print ('\tState: '+state)
@@ -24,7 +24,7 @@ def ec2_ip(status):
 				print ('\tIP: '+ip_addr)
 
 def ec2_terminate():
-	ec2_ip("running")
+	ec2_info("running")
 	print ('Which instance do you want to terminate?')
 	print ('* for all, instance id or q to quit: ')
 	instance_to_terminate = raw_input()
@@ -47,4 +47,4 @@ if ((len(sys.argv) > 1) and(sys.argv[1] == "bill")) :
 elif ((len(sys.argv) > 1) and(sys.argv[1] == "term")) :
 	ec2_terminate()
 else:
-	ec2_ip("all")
+	ec2_info("all")
