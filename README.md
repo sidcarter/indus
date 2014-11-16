@@ -10,8 +10,8 @@ A set of tools and configuration files that I end up using too often. My dotfile
 
 * aws.py - Set of commands for managing AWS instances.  
   Written in python.  
-  ./aws.py gives the IP for your first instance
-  ./aws.py term terminates the first instance
+  ./aws.py - lists all available instances  
+  ./aws.py term - terminates instances
 
 * .muttrc - Coming soon
 * .fetchmailrc - Coming soon
