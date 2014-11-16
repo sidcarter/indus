@@ -16,13 +16,12 @@ def ec2_ip(status):
 			name="NoName"
 			ip_addr='none'
 			state='none'
-		if state<>status:
-			break
-		print ('Instance ID: '+x.id)
-		print ('\tName: '+ name)
-		print ('\tState: '+state)
-		if (state=="running"):
-			print ('\tIP: '+ip_addr)
+		if state==status:
+			print ('Instance ID: '+x.id)
+			print ('\tName: '+ name)
+			print ('\tState: '+state)
+			if (state=="running"):
+				print ('\tIP: '+ip_addr)
 
 def ec2_terminate():
 	ec2_ip("running")

@@ -59,6 +59,10 @@
     # just show the instance-id
     - debug: msg="{{ hostvars[inventory_hostname]['ansible_ec2_instance_id'] }}"
 
+    - name: set hostname to {{ instance_name }}
+      hostname:
+        name: "{{ instance_name }}"
+
     - name: install postfix
       yum: pkg=postfix state=installed
 
