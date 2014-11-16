@@ -64,8 +64,11 @@
       hostname:
         name: "{{ instance_name }}"
 
+ #   - command: cat "{{ hostvars[inventory_hostname] }}" "{{ instance_name }}" > /etc/hosts
+
     - name: install additional packages
       apt: 
+        update_cache: yes
         name: "{{ item }}"
         state: latest
       with_items: 
@@ -74,14 +77,14 @@
         - procmail
         - socat
         - telnet
-        - mailx
+        - bsd-mailx
         - python-pip
 
     - name: upgrade all packages
-      apt: name=* state=latest
+      apt: upgrade=dist
 
     - name: remove sendmail (stupid piece of crap)
-      apt: pkg=sendmail state=removed
+      apt: pkg=sendmail state=absent
 
     - name: Create user 
       user: 
