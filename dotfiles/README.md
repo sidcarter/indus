@@ -1,5 +1,6 @@
 dotfiles
 ========
 
-* .muttrc - Coming soon
-* .fetchmailrc - Coming soon
+* dot.muttrc
+* dot.fetchmailrc
+* dot.netrc
