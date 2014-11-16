@@ -16,7 +16,7 @@ def ec2_info(status):
 			name="NoName"
 			ip_addr='none'
 			state='none'
-		if status=="all":
+		if status=="all" or status==state:
 			print ('Instance ID: '+x.id)
 			print ('\tName: '+ name)
 			print ('\tState: '+state)
@@ -29,6 +29,10 @@ def ec2_terminate():
 	print ('* for all, instance id or q to quit: ')
 	instance_to_terminate = raw_input()
 	if instance_to_terminate == "*":
+		areyousure = raw_input("Are you sure (y/n)? ")
+		if areyousure=="n":
+			print('No instances terminated.')
+			return
 		for i in conn.get_only_instances():
 			i.terminate()
 			print 'Termination successful'
@@ -36,7 +40,7 @@ def ec2_terminate():
 		quit()
 	else:
 		conn.terminate_instances(instance_to_terminate)	
-		print 'Termination successful'
+		print ('Terminated '+instance_to_terminate+'  successfully')
 
 def get_bill():
 	conn = boto.connect_fps("fps.amazon.com")

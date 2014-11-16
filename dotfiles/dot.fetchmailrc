@@ -1,0 +1,6 @@
+poll pop.gmx.net proto pop3
+	user "username"
+	fetchall
+	ssl
+	no rewrite
+	no keep
