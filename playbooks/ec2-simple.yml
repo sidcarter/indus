@@ -6,7 +6,7 @@
   gather_facts: False
   vars:
     instance_type: "t2.micro"
-    image: "ami-b66ed3de"
+    image: "ami-5ae66932"
     region: "us-east-1"
     volumes:
     - device_name: /dev/xvdg
@@ -46,8 +46,9 @@
 
 - hosts: ec2hosts
   gather_facts: True
-  user: ec2-user
+  user: admin
   sudo: True
+
   tasks:
 
     # fetch instance data from the metadata servers in ec2
@@ -63,23 +64,24 @@
       hostname:
         name: "{{ instance_name }}"
 
-    - name: install postfix
-      yum: pkg=postfix state=installed
-
-    - name: remove sendmail (stupid piece of crap)
-      yum: pkg=sendmail state=removed
-
-    - name: install fetchmail
-      yum: pkg=fetchmail state=installed
-
-    - name: install procmail
-      yum: pkg=procmail state=installed
-
-    - name: install java development files
-      yum: pkg=java-1.7.0-openjdk-devel state=present
+    - name: install additional packages
+      apt: 
+        name: "{{ item }}"
+        state: latest
+      with_items: 
+        - git
+        - fetchmail
+        - procmail
+        - socat
+        - telnet
+        - mailx
+        - python-pip
 
     - name: upgrade all packages
-      yum: name=* state=latest
+      apt: name=* state=latest
+
+    - name: remove sendmail (stupid piece of crap)
+      apt: pkg=sendmail state=removed
 
     - name: Create user 
       user: 

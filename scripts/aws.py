@@ -34,8 +34,9 @@ def ec2_terminate():
 			print('No instances terminated.')
 			return
 		for i in conn.get_only_instances():
-			i.terminate()
-			print 'Termination successful'
+			if (i.state=="running"):
+				i.terminate()
+				print 'Termination successful'
 	elif instance_to_terminate=="q":
 		quit()
 	else:
