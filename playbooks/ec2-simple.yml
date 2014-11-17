@@ -79,6 +79,7 @@
         - telnet
         - bsd-mailx
         - python-pip
+        - ant
 
     - name: upgrade all packages
       apt: upgrade=dist
