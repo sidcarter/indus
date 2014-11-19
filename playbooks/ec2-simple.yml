@@ -8,10 +8,22 @@
     instance_type: "t2.micro"
     image: "ami-5ae66932"
     region: "us-east-1"
-    volumes:
-    - device_name: /dev/xvdg
-      volume_size: 20
-      delete_on_termination: True
+  vars_prompt:
+    - name: "instance_name"
+      prompt: "What do you want to name your instance? "
+      default: "ec2debian"
+      private: no
+
+    - name: "keypair"
+      prompt: "What's the keypair name? "
+      default: "mykeypair"
+      private: no
+
+    - name: "group"
+      prompt: "Do you have a security group you want to use? "
+      default: "mysecgroup"
+      private: no
+
   tasks:
     - name: make one instance
       ec2: image={{ image }}
@@ -37,12 +49,9 @@
         port=22
       with_items: ec2_host.instances
 
-# Connect to the node and gather facts,
-# including the instance-id. These facts
-# are added to inventory hostvars for the
-# duration of the playbook's execution
-# Typical "provisioning" tasks would go in
-# this playbook.
+# Connect to the node and gather facts, including the instance-id. These facts
+# are added to inventory hostvars for the duration of the playbook's execution
+# Typical "provisioning" tasks would go in this playbook.
 
 - hosts: ec2hosts
   gather_facts: True
@@ -87,7 +96,7 @@
     - name: remove sendmail (stupid piece of crap)
       apt: pkg=sendmail state=absent
 
-    - name: Create user 
-      user: 
-        name: "{{ username }}"
-        state: present
+#    - name: Create user 
+#      user: 
+#        name: "{{ username }}"
+#        state: present
