@@ -75,6 +75,9 @@
 
  #   - command: cat "{{ hostvars[inventory_hostname] }}" "{{ instance_name }}" > /etc/hosts
 
+    - name: upgrade all packages
+      apt: upgrade=dist
+
     - name: install additional packages
       apt: 
         update_cache: yes
@@ -82,16 +85,15 @@
         state: latest
       with_items: 
         - git
+        - postfix
         - fetchmail
         - procmail
         - socat
         - telnet
         - bsd-mailx
         - python-pip
+        - openjdk-7-jdk
         - ant
-
-    - name: upgrade all packages
-      apt: upgrade=dist
 
     - name: remove sendmail (stupid piece of crap)
       apt: pkg=sendmail state=absent
