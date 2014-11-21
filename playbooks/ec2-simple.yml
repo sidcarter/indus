@@ -6,7 +6,7 @@
   gather_facts: False
   vars:
     instance_type: "t2.micro"
-    image: "ami-5ae66932"
+    image: "ami-1420b57c"
     region: "us-east-1"
   vars_prompt:
     - name: "instance_name"
