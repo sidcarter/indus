@@ -8,6 +8,9 @@
     instance_type: "t2.micro"
     image: "ami-1420b57c"
     region: "us-east-1"
+    volumes:
+    - device_name: /dev/xvda
+      volume_size: 10
   vars_prompt:
     - name: "instance_name"
       prompt: "What do you want to name your instance? "
@@ -26,13 +29,16 @@
 
   tasks:
     - name: make one instance
-      ec2: image={{ image }}
-           instance_type={{ instance_type }}
-           keypair={{ keypair }}
-           region={{ region }}
-           group={{ group }}
-           instance_tags='{"Name":"{{instance_name}}"}'
-           wait=true
+      local_action:
+        module: ec2
+        image: "{{ image }}"
+        instance_type: "{{ instance_type }}"
+        keypair: "{{ keypair }}"
+        region: "{{ region }}"
+        group: "{{ group }}"
+        volumes: "{{ volumes }}"
+        instance_tags: '{"Name":"{{instance_name}}"}'
+        wait: true
       register: ec2_host
 
     - debug: var=ec2_host
