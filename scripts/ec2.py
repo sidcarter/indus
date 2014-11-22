@@ -12,7 +12,7 @@ def ec2_info(status):
 			name=x.tags["Name"]
 			ip_addr=x.ip_address
 			state=x.state
-		except TypeError:
+		except AttributeError:
 			name="NoName"
 			ip_addr='none'
 			state='none'
