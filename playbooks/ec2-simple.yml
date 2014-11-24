@@ -79,7 +79,7 @@
       hostname:
         name: "{{ instance_name }}"
 
- #   - command: cat "{{ hostvars[inventory_hostname] }}" "{{ instance_name }}" > /etc/hosts
+    - command: cat "{{ ansible_ec2_local_ipv4 }}" "{{ instance_name }}" > /etc/hosts
 
     - name: upgrade all packages
       apt: upgrade=dist
@@ -100,6 +100,8 @@
         - python-pip
         - openjdk-7-jdk
         - ant
+        - maven
+        - python-django
 
     - name: remove sendmail (stupid piece of crap)
       apt: pkg=sendmail state=absent
