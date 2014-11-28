@@ -46,9 +46,7 @@ def get_bill():
 	conn = boto.connect_fps("fps.amazon.com")
 	print conn.get_account_balance()
 
-if ((len(sys.argv) > 1) and(sys.argv[1] == "bill")) :
-	get_bill()
-elif ((len(sys.argv) > 1) and(sys.argv[1] == "term")) :
+if ((len(sys.argv) > 1) and(sys.argv[1] == "term")) :
 	ec2_terminate()
 else:
 	ec2_info("all")
