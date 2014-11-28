@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 from boto import ec2 as ec2
-import boto.fps
 
 conn = ec2.connect_to_region("us-east-1")
 
