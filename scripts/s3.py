@@ -6,13 +6,13 @@ conn = s3.connect_to_region("us-east-1")
 
 def list_buckets():
 	buckets = conn.get_all_buckets()
+	print ("List of buckets:")
 	for b in buckets:
 		try:
 			name=b.name
 		except AttributeError:
 			name="NoName"
-
-		print ('Bucket Name: '+ name)
+		print ("\t"+name)
 
 def list_files():
 	bucketname=raw_input("Which bucket's files you want? ")
@@ -27,13 +27,24 @@ def list_files():
 		choice=raw_input("Would you like to download these files? ")
 		if (choice=="n"): return
 		else:
-			cwd=os.getcwd()
-			fname=cwd+"/"
 			print ("Downloading files...")
 			for f in files:
+				cwd=os.getcwd()
+				fname=cwd+"/"
 				fname = fname+f.name
-				if (os.path.exists(fname)): 
-				f.get_contents_to_filename(fname)
+				dir = os.path.dirname(fname)
+				if not os.path.exists(dir): 
+					dir_to_create=cwd
+					for dirs in dir.split("/"):
+						dir_to_create+="/"+dirs
+						#print(dir_to_create)
+						if not os.path.exists(dir_to_create): os.mkdir(dir_to_create)
+				with open(str(fname),'wb') as fp:
+					f.get_contents_to_file(fp)
+				#f.get_contents_to_filename(fname)
+				#print fname
+				#close(fp)
+				#print ("f.get_contents_to_filename("+fname+")")
 	else:
 		print "No such bucket found."
 		return
