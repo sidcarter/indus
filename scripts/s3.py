@@ -34,17 +34,8 @@ def list_files():
 				fname = fname+f.name
 				dir = os.path.dirname(fname)
 				if not os.path.exists(dir): 
-					dir_to_create=cwd
-					for dirs in dir.split("/"):
-						dir_to_create+="/"+dirs
-						#print(dir_to_create)
-						if not os.path.exists(dir_to_create): os.mkdir(dir_to_create)
-				with open(str(fname),'wb') as fp:
-					f.get_contents_to_file(fp)
-				#f.get_contents_to_filename(fname)
-				#print fname
-				#close(fp)
-				#print ("f.get_contents_to_filename("+fname+")")
+						os.makedirs(dir)
+				f.get_contents_to_filename(fname)
 	else:
 		print "No such bucket found."
 		return
