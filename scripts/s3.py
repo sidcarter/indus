@@ -34,8 +34,12 @@ def list_files():
 				fname = fname+f.name
 				dir = os.path.dirname(fname)
 				if not os.path.exists(dir): 
+						print dir
 						os.makedirs(dir)
-				f.get_contents_to_filename(fname)
+				try:
+					f.get_contents_to_filename(fname)
+				except OSError,e:
+					print e
 	else:
 		print "No such bucket found."
 		return

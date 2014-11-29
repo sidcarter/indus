@@ -14,6 +14,9 @@ scripts
   -lf - lists all files in a bucket  
   -p - lists the policy for a bucket  
 
+* aws_usage.py - Code to download your aws usage reports.  
+  Originally from - https://github.com/kzahel/awsbill  
+
 * emr.py - Set of commands for mapreduce tasks
   Coming soon...   
 
