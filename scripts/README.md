@@ -6,7 +6,7 @@ scripts
 * ec2.py - Set of commands for managing AWS instances.  
   Remember to export AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID before you use this script. 
   ./ec2.py - lists all available instances  
-  ./ec2.py term - terminates instances
+  ./ec2.py -t - terminates instances
 
 * s3.py - Set of commands for managing S3 buckets.  
   Remember to export AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID before you use this script. 
