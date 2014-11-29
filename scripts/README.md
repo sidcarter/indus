@@ -14,6 +14,9 @@ scripts
   -lf - lists all files in a bucket  
   -p - lists the policy for a bucket  
 
+* emr.py - Set of commands for mapreduce tasks
+  Coming soon...   
+
 * wordfunc.py - Set of functions which use nltk module.  
   Something to use when creating doing anything with words.
 
