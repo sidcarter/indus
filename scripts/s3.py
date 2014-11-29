@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import os,sys
 from boto import s3 as s3
 
 conn = s3.connect_to_region("us-east-1")
@@ -27,7 +27,13 @@ def list_files():
 		choice=raw_input("Would you like to download these files? ")
 		if (choice=="n"): return
 		else:
+			cwd=os.getcwd()
+			fname=cwd+"/"
 			print ("Downloading files...")
+			for f in files:
+				fname = fname+f.name
+				if (os.path.exists(fname)): 
+				f.get_contents_to_filename(fname)
 	else:
 		print "No such bucket found."
 		return
