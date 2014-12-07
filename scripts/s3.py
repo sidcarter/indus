@@ -5,7 +5,7 @@ from boto import s3 as s3
 conn = s3.connect_to_region("us-east-1")
 
 def list_buckets():
-	buckets = conn.get_all_buckets()
+	buckets=conn.get_all_buckets()
 	print ("List of buckets:")
 	for b in buckets:
 		try:
@@ -18,7 +18,7 @@ def list_files():
 	bucketname=raw_input("Which bucket's files you want? ")
 	count=0
 	if (conn.lookup(bucketname)):
-		files=conn.get_bucket(bucketname).get_all_keys()
+		files=[k for k in conn.get_bucket(bucketname)]
 		print "Files: "
 		for k in files:
 			count+=1
@@ -27,25 +27,27 @@ def list_files():
 		choice=raw_input("Would you like to download these files? ")
 		if (choice=="n"): return
 		else:
+			choice=raw_input("And delete the files after downloading them? ")
 			print ("Downloading files...")
 			for f in files:
 				cwd=os.getcwd()
 				fname=cwd+"/"
-				fname = fname+f.name
-				dir = os.path.dirname(fname)
+				fname=fname+f.name
+				dir=os.path.dirname(fname)
 				if not os.path.exists(dir): 
-						print dir
 						os.makedirs(dir)
-				try:
-					f.get_contents_to_filename(fname)
-				except OSError,e:
-					print e
+				if (not os.path.basename(fname)==""):
+					try:
+						f.get_contents_to_filename(fname)
+						if (choice=="y"): print f.delete()
+					except OSError,e:
+						print e
 	else:
 		print "No such bucket found."
 		return
 
 def list_policy():
-	bucketname= raw_input("Which bucket's policy you want? ")
+	bucketname=raw_input("Which bucket's policy you want? ")
 	try:
 		policy=conn.get_bucket(bucketname).get_policy()
 		print ("Policy for Bucket "+bucketname+": ")
@@ -58,7 +60,7 @@ def bucket_delete():
 	print ('* for all, bucket id or q to quit: ')
 	bucket_to_delete= raw_input()
 	if bucket_to_delete == "*":
-		areyousure = raw_input("Are you sure (y/n)? ")
+		areyousure=raw_input("Are you sure (y/n)? ")
 		if areyousure=="n":
 			print('No buckets deleted.')
 			return
