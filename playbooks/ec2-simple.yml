@@ -1,5 +1,7 @@
 # Use the ec2 module to create a new host and then add
 # it to a special "ec2hosts" group.
+# the use the "ec2hosts" group to do other magic
+# creates an on-demand instance
 
 - hosts: localhost
   connection: local
