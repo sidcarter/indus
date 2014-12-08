@@ -42,11 +42,23 @@ def ec2_terminate():
 		conn.terminate_instances(instance_to_terminate)	
 		print ('Terminated '+instance_to_terminate+'  successfully')
 
+def ec2_start_stop():
+	ec2_info("all")
+	instance_to_toggle=raw_input("Which instance do you want to start or stop?")
+	try:
+		get_state=conn.get_all_instance_status(instance_to_toggle)
+		print ("The instance "+instance_to_toggle+" is "+get_state)
+	except e:
+		print (e)
+		
+
 def get_bill():
 	conn = boto.connect_fps("fps.amazon.com")
 	print conn.get_account_balance()
 
 if ((len(sys.argv) > 1) and(sys.argv[1] == "-t")) :
 	ec2_terminate()
+if ((len(sys.argv) > 1) and(sys.argv[1] == "-s")) :
+	ec2_start_stop()
 else:
 	ec2_info("all")

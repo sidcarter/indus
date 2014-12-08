@@ -25,8 +25,7 @@ def list_files():
 			print k.name.encode('utf-8')
 		print ("\nTotal number of files: "+str(count))
 		choice=raw_input("Would you like to download these files? ")
-		if (choice=="n"): return
-		else:
+		if (choice=="y"): 
 			choice=raw_input("And delete the files after downloading them? ")
 			print ("Downloading files...")
 			for f in files:
