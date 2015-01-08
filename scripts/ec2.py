@@ -2,7 +2,10 @@
 import sys
 from boto import ec2 as ec2
 
-conn = ec2.connect_to_region("us-east-1")
+try:
+	conn = ec2.connect_to_region("us-east-1")
+except Exception as e:
+	sys.exit(e)
 
 def ec2_info(status):
 	instances = conn.get_only_instances()
@@ -15,12 +18,14 @@ def ec2_info(status):
 			name="NoName"
 			ip_addr='none'
 			state='none'
+		except KeyError:
+			print ("Unknown Key.")
 		if status=="all" or status==state:
-			print ('Instance ID: '+x.id)
-			print ('\tName: '+ name)
-			print ('\tState: '+state)
+			info = 'Instance ID: '+x.id+'\n\tName: '+ name
+			info = info+'\n\tState: '+state+'\n\tIP: '
 			if (state=="running"):
-				print ('\tIP: '+ip_addr)
+				info = info+str(ip_addr)
+			print info
 
 def ec2_terminate():
 	ec2_info("running")
