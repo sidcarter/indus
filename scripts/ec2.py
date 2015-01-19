@@ -12,6 +12,7 @@ def ec2_info(status):
 	for x in instances:
 		try:
 			name=x.tags["Name"]
+			dns_name=x.public_dns_name
 			ip_addr=x.ip_address
 			priv_ip=x.private_ip_address
 			state=x.state
@@ -23,10 +24,11 @@ def ec2_info(status):
 			print ("Unknown Key.")
 		if status=="all" or status==state:
 			info = 'ID: '+x.id+' |Name: '+ name
+			info = info+' |DNS Name: '+dns_name
 			info = info+' |State: '+state
 			if (state=="running"):
 				info = info+' |IP: '+str(ip_addr)
-				info = info+' |Private IP:'+str(priv_ip)
+				info = info+' |Private IP: '+str(priv_ip)
 			print info
 
 def ec2_terminate():
