@@ -13,6 +13,7 @@ def ec2_info(status):
 		try:
 			name=x.tags["Name"]
 			ip_addr=x.ip_address
+			priv_ip=x.private_ip_address
 			state=x.state
 		except AttributeError:
 			name="NoName"
@@ -21,10 +22,11 @@ def ec2_info(status):
 		except KeyError:
 			print ("Unknown Key.")
 		if status=="all" or status==state:
-			info = 'Instance ID: '+x.id+'\n\tName: '+ name
-			info = info+'\n\tState: '+state+'\n\tIP: '
+			info = 'ID: '+x.id+' |Name: '+ name
+			info = info+' |State: '+state
 			if (state=="running"):
-				info = info+str(ip_addr)
+				info = info+' |IP: '+str(ip_addr)
+				info = info+' |Private IP:'+str(priv_ip)
 			print info
 
 def ec2_terminate():
