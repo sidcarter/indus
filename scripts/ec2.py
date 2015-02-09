@@ -9,8 +9,10 @@ except Exception as e:
 
 def ec2_info(status):
 	instances = conn.get_only_instances()
+	print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
 	for x in instances:
 		try:
+			id=x.id
 			name=x.tags["Name"]
 			dns_name=x.public_dns_name
 			ip_addr=x.ip_address
@@ -20,19 +22,16 @@ def ec2_info(status):
 			name="NoName"
 			ip_addr='none'
 			state='none'
-		except KeyError:
-			print ("Unknown Key.")
+		except KeyError as ke:
+			print ("KeyError: %s tag not set") % ke
 		if status=="all" or status==state:
-			info = 'ID: '+x.id+' |Name: '+ name
-			info = info+' |DNS Name: '+dns_name
-			info = info+' |State: '+state
+			info = '%s %s %s' % (id,name,state)
 			if (state=="running"):
-				info = info+' |IP: '+str(ip_addr)
-				info = info+' |Private IP: '+str(priv_ip)
+				info = '%s %s %s' %(info,ip_addr, priv_ip)
 			print info
 
 def ec2_terminate():
-	ec2_info("running")
+	ec2_info('running')
 	print ('Which instance do you want to terminate?')
 	print ('* for all, instance id or q to quit: ')
 	instance_to_terminate = raw_input()
@@ -52,7 +51,7 @@ def ec2_terminate():
 		print ('Terminated '+instance_to_terminate+'  successfully')
 
 def ec2_start_stop():
-	ec2_info("all")
+	ec2_info('all')
 	instance_to_toggle=raw_input("Which instance do you want to start or stop?")
 	try:
 		get_state=conn.get_all_instance_status(instance_to_toggle)
