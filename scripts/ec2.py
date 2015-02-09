@@ -2,33 +2,32 @@
 import sys
 from boto import ec2 as ec2
 
-try:
-	conn = ec2.connect_to_region("us-east-1")
-except Exception as e:
-	sys.exit(e)
-
 def ec2_info(status):
-	instances = conn.get_only_instances()
-	print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
-	for x in instances:
-		try:
-			id=x.id
-			name=x.tags["Name"]
-			dns_name=x.public_dns_name
-			ip_addr=x.ip_address
-			priv_ip=x.private_ip_address
-			state=x.state
-		except AttributeError:
-			name="NoName"
-			ip_addr='none'
-			state='none'
-		except KeyError as ke:
-			print ("KeyError: %s tag not set") % ke
-		if status=="all" or status==state:
-			info = '%s %s %s' % (id,name,state)
-			if (state=="running"):
-				info = '%s %s %s' %(info,ip_addr, priv_ip)
-			print info
+    print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
+    for region in ec2.regions():
+        if not 'us' in region.name or 'gov' in region.name: continue
+        conn = ec2.connect_to_region(region.name)
+        instances = conn.get_only_instances()
+        for x in instances:
+            try:
+                id=x.id
+                name=x.tags["Name"]
+                dns_name=x.public_dns_name
+                ip_addr=x.ip_address
+                priv_ip=x.private_ip_address
+                state=x.state
+            except AttributeError:
+                name="NoName"
+                ip_addr='none'
+                state='none'
+            except KeyError as ke:
+                continue
+#                print ("KeyError: %s tag not set") % ke
+            if status=="all" or status==state:
+                info = '%s %s %s' % (id,name,state)
+                if (state=="running"):
+                    info = '%s %s %s' %(info,ip_addr, priv_ip)
+                    print info
 
 def ec2_terminate():
 	ec2_info('running')
