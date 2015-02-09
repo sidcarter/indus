@@ -13,8 +13,8 @@ else:
     header={'x-api-key':api_key}
     v2_endpoint="https://api.newrelic.com/v2"
 
-def get_endpoint(entity):
-    return "%s/%s.json" % (v2_endpoint,entity)
+def get_endpoint(type):
+    return "%s/%s.json" % (v2_endpoint,type)
 
 def get_entities(type,endpoint='',entities=[]):
     if not endpoint:

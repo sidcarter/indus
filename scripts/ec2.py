@@ -60,14 +60,13 @@ def ec2_start_stop():
 	except e:
 		print (e)
 		
-
 def get_bill():
 	conn = boto.connect_fps("fps.amazon.com")
 	print conn.get_account_balance()
 
-if ((len(sys.argv) > 1) and(sys.argv[1] == "-t")) :
-	ec2_terminate()
 if ((len(sys.argv) > 1) and(sys.argv[1] == "-s")) :
+	ec2_snapshots()
+if ((len(sys.argv) > 1) and(sys.argv[1] == "-r")) :
 	ec2_start_stop()
 else:
 	ec2_info("all")
