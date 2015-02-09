@@ -59,13 +59,28 @@ def ec2_start_stop():
 	except e:
 		print (e)
 		
-def get_bill():
-	conn = boto.connect_fps("fps.amazon.com")
-	print conn.get_account_balance()
+def ec2_secgroups():
+    for region in ec2.regions():
+        if not 'us' in region.name or 'gov' in region.name: continue
+        print region.name
+        try:
+            conn=ec2.connect_to_region(region.name)
+        except Exception as e:
+            sys.exit(e)
 
+        rs=conn.get_all_security_groups()
+
+        for item in rs:
+            print "Rules: for %s are:" % item.name
+            for rule in item.rules:
+                print "rule: %s" % rule
+            print
+            
 if ((len(sys.argv) > 1) and(sys.argv[1] == "-s")) :
 	ec2_snapshots()
 if ((len(sys.argv) > 1) and(sys.argv[1] == "-r")) :
 	ec2_start_stop()
+if ((len(sys.argv) > 1) and(sys.argv[1] == "-g")) :
+	ec2_secgroups()
 else:
 	ec2_info("all")
