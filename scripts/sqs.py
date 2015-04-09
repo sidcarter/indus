@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-import sys
+import sys,time
 import boto.sqs
 
-if (len(sys.argv) <= 2):
+if (len(sys.argv) <= 1):
 	sys.exit("Insufficient arguments.\nUsage: sqs.py <queue_name> <no_of_messages>")
 else:
 	que_name = sys.argv[1]
-	no_of_messages = sys.argv[2]
+	no_of_messages = 10
 
 conn = boto.sqs.connect_to_region("us-east-1")
 
@@ -23,5 +23,8 @@ except AttributeError as e:
 else:
 	print("We are looking at %s messages." % len(rs))
 
-	for i in range(len(rs)):
-		print(rs[i].get_body())
+	while True:
+		for i in range(len(rs)):
+			print(rs[i].get_body())
+			conn.delete_message(bounce_que,rs[i])
+		time.sleep(1)
