@@ -3,11 +3,11 @@ import sys
 from boto import ec2 as ec2
 
 def ec2_info(status):
-    print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
     for region in ec2.regions():
         if not 'us' in region.name or 'gov' in region.name: continue
         conn = ec2.connect_to_region(region.name)
         instances = conn.get_only_instances()
+        print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
         for x in instances:
             try:
                 id=x.id
@@ -26,7 +26,7 @@ def ec2_info(status):
             if status=="all" or status==state:
                 info = '%s %s %s' % (id,name,state)
                 if (state=="running"):
-                    info = '%s %s %s' %(info,ip_addr, priv_ip)
+                    info = '%s %s %s %s' %(info, dns_name, ip_addr, priv_ip)
                     print info
 
 def ec2_terminate():
@@ -58,12 +58,9 @@ def ec2_start_stop():
 	except e:
 		print (e)
 		
-def ec2_secgroups():
-    for region in ec2.regions():
-        if not 'us' in region.name or 'gov' in region.name: continue
-        print region.name
+def ec2_secgroups(region="us-east-1"):
         try:
-            conn=ec2.connect_to_region(region.name)
+            conn=ec2.connect_to_region(region)
         except Exception as e:
             sys.exit(e)
 
@@ -72,7 +69,13 @@ def ec2_secgroups():
         for item in rs:
             print "Rules: for %s are:" % item.name
             for rule in item.rules:
-                print "rule: %s" % rule
+                for grant in rule.grants:
+                    if grant.cidr_ip=="0.0.0.0/0":
+                        print "\t%s-%s (open)" % (rule.from_port, rule.to_port)
+                    elif grant.cidr_ip:
+                        print "\t%s-%s (%s)" % (rule.from_port, rule.to_port, grant.cidr_ip)
+                    else:
+                        print "\t%s-%s (%s)" % (rule.from_port, rule.to_port, grant.name)
             print
             
 if ((len(sys.argv) > 1) and(sys.argv[1] == "-s")) :
