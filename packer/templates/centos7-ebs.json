@@ -1,0 +1,32 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "private_key_file": "{{env `PRIVATE_KEY_FILE`}}",
+    "vpc_subnet_id": "{{env `VPC_SUBNET_ID`}}",
+    "vpc_sg_id": "{{env `VPC_SG_ID`}}"
+  },
+
+  "builders": [{
+    "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ami_name": "version_{{timestamp}}",
+      "ami_description": "Built with Packer - Hardened Centos 7 Image",
+      "source_ami": "ami-96a818fe",
+      "region": "us-east-1",
+      "associate_public_ip_address": "false",
+      "instance_type": "t2.micro",
+      "enhanced_networking": "true",
+      "subnet_id": "{{user `vpc_subnet_id`}}",
+      "security_group_id": "{{user `vpc_sg_id`}}",
+      "ssh_username": "root",
+      "ssh_port": "22",
+      "ssh_timeout": "10m",
+      "ssh_private_ip": "true",
+      "tags": {
+        "OS_Version": "CentOS",
+        "Release": "7"
+      }
+  }]
+}
