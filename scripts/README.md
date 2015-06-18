@@ -23,6 +23,9 @@ scripts
 * wordfunc.py - Set of functions which use nltk module.  
   Something to use when creating doing anything with words.
 
+* setup_ansible.sh - a quick script I created to setup ansible for 200+ servers
+  Uses ec2.py and ec2.ini dynamic inventory scripts
+
 * get_syllables.py - plan to use this to create poems and shit.  
   Need to figure out how to strip duplicates.
   Need to figure try and use hadoop/scala.

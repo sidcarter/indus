@@ -12,7 +12,7 @@ if ARGV.length == 2
   user = ARGV[0]
   dir = ARGV[1]
 else
-  puts "Not enough arguments.\nUsage: get_user_repos.rb <username> <dirname>"
+  puts "Not enough arguments.\nUsage: get_user_repos.rb <username/orgname> <dirname>"
   exit(1)
 end
 
@@ -25,16 +25,33 @@ else
   Dir.chdir(dir)
 end
 
-url = "https://api.github.com/users/#{user}/repos"
-puts url
+def get_json_response(url,result=nil)
+  resp = Net::HTTP.get_response(URI.parse(url))
+  data = resp.body
   
-resp = Net::HTTP.get_response(URI.parse(url))
-data = resp.body
+  if resp.get_fields('link')
+    puts "this one's got more" if /next/.match(resp.get_fields('link')[0].split(',')[0])
+  else
+    result=JSON.parse(data)
+  end
+# 
+end
+
+user_url = "https://api.github.com/users/#{user}"
+user_data = get_json_response(user_url)
+  
+if user_data['type']=="Organization"
+  repo_url = "https://api.github.com/orgs/#{user}/repos"
+else
+  repo_url = "https://api.github.com/users/#{user}/repos"
+end
+
+puts repo_url
+repo_data=get_json_response(repo_url)
+puts repo_data
  
-result = JSON.parse(data)
- 
-result.each do |repo|
+repo_data.each do |repo|
   reponame=/[a-z]+/.match(repo['name']) #don't want any "-" in the name
   puts "Fetching #{repo['html_url']} as #{reponame}"
-  system "git clone #{repo['html_url']} #{reponame}"
+#  system "git clone #{repo['html_url']} #{reponame}"
 end

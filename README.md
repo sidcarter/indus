@@ -10,3 +10,5 @@ Directories contain their own README files.
 * scripts/ - All the scripts I created and used
 
 * dotfiles/ - All the dotfiles like .muttrc and .procmailrc etc.,
+
+* packer/ - All the packer templates I used/created.
