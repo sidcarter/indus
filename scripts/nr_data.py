@@ -16,7 +16,7 @@ else:
 def get_endpoint(type):
     return "%s/%s.json" % (v2_endpoint,type)
 
-def get_entities(type,endpoint='',entities=[]):
+def get_entities(type,endpoint=None,entities=None):
     if not endpoint:
         endpoint=get_endpoint(type)
     r=requests.get(endpoint,headers=header)
