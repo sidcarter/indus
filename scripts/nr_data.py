@@ -19,6 +19,7 @@ def get_endpoint(type):
 def get_entities(type,endpoint=None,entities=None):
     if not endpoint:
         endpoint=get_endpoint(type)
+        entities=[]
     r=requests.get(endpoint,headers=header)
     entities.extend(r.json()[type])
     if not 'next' in r.links:
@@ -26,7 +27,10 @@ def get_entities(type,endpoint=None,entities=None):
     else:
         return get_entities(type,r.links['next']['url'],entities)
 
+print "Fetching info from New Relic....",
 servers = get_entities('servers')
+applications = get_entities('applications')
+print "Done."
 
 print "The following hosts are not reporting: "
 count=0
@@ -38,7 +42,5 @@ for server in servers:
 print "that's a total of %d servers not reporting" % count
     
 print "total servers: %d" % len(servers)
-
-applications = get_entities('applications')
 
 print "total applications: %d" % len(applications)
