@@ -28,6 +28,7 @@ def get_entities(type,endpoint=None,entities=None):
         return get_entities(type,r.links['next']['url'],entities)
 
 print "Fetching info from New Relic....",
+sys.stdout.flush()
 servers = get_entities('servers')
 applications = get_entities('applications')
 print "Done."
