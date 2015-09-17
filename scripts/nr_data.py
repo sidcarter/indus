@@ -63,7 +63,7 @@ def main():
             try:
                 entry="%d,%s,%s,%s" %(entity['id'],entity['name'], entity['reporting'],entity['health_status'])
             except KeyError:
-                entry="%d,%s,%s - missing health status" %(entity['id'],entity['name'], entity['reporting'])
+                entry="%d,%s,%s - host not sending data. dead, perhaps?" %(entity['id'],entity['name'], entity['reporting'])
                 nr_count+=1
 
             if args.non_reporting and not entity['reporting']: 

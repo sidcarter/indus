@@ -2,6 +2,7 @@
 import sys,time
 import json
 import boto.sqs
+import yaml
 
 def get_args():
     if (len(sys.argv) <= 1):
@@ -30,7 +31,7 @@ def process_ques(que_name,no_of_messages):
             while True:
                 for i in range(len(rs)):
                     message = json.loads(rs[i].get_body())['Message']
-                    print(json.loads(message))['bounce']['bouncedRecipients'][0]['emailAddress']
+                    print(yaml.safe_load(message))['bounce']['bouncedRecipients'][0]['emailAddress']
                     # print(message['bounce'])
                     conn.delete_message(que,rs[i])
                 time.sleep(1)
