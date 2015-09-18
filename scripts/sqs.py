@@ -4,6 +4,8 @@ import json
 import boto.sqs
 import yaml
 
+# remember to set your AWS_SECRET_ACCESS_KEY & AWS_ACCESS_KEY_ID
+
 def get_args():
     if (len(sys.argv) <= 1):
         sys.exit("Insufficient arguments.\nUsage: sqs.py <queue_name> <no_of_messages>")
@@ -14,13 +16,13 @@ def get_args():
     return (que_name,no_of_messages)
 
 def process_ques(que_name,no_of_messages):
-    conn = boto.sqs.connect_to_region("us-east-1")
-
-    # all_ques = conn.get_all_queues()
-    #for queue in all_ques:
-    #	print("Queue: %s" % queue)
-
-    que = conn.get_queue(que_name)
+    try:
+        conn = boto.sqs.connect_to_region("us-east-1")
+    except Exception as e:
+        print("Error connecting to SQS: %s") %e
+        sys.exit(1)
+    else:
+        que = conn.get_queue(que_name)
 
     try:
 	    rs = que.get_messages(no_of_messages)
