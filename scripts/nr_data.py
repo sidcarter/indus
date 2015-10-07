@@ -66,7 +66,7 @@ def main():
             entries.add_row(entry)
 
         print entries
-        if nr_count>0: print "{} {} out of {} not reporting" % (nr_count,entity_type,len(entities))
+        if nr_count>0: print "{} {} out of {} not reporting".format(nr_count,entity_type,len(entities))
 
     elif args.delete:
         entities_to_delete=[(entity['id'],entity['name']) for entity in entities if not entity['reporting']]
@@ -80,8 +80,8 @@ def main():
                         remove_entity(entity_type,entity[0])
                         nr_count+=1
                     except Exception as e:
-                        print "Unable to delete host: {} due to error: {}" % (entity[1],e)
-                if nr_count>0: print "{} hosts deleted from New Relic" % nr_count
+                        print "Unable to delete host: {} due to error: {}".format(entity[1],e)
+                if nr_count>0: print "{} hosts deleted from New Relic".format(nr_count)
             else: 
                 print "Skipping deletion. Goodbye!"
             
