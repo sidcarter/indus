@@ -5,6 +5,7 @@ import sys
 import argparse
 import requests
 import json
+from prettytable import PrettyTable
 
 api_key=os.getenv("NEW_RELIC_API_KEY") 
     
@@ -43,7 +44,6 @@ def get_entity(type,id):
     return r.json()
 
 def main():
-    
     parser = argparse.ArgumentParser(description='New Relic V2 API Interface')
     parser.add_argument('-l', '--list', nargs=1, required=True, choices=['servers','applications'], help='List all the entities')
     parser.add_argument('-n', '--non-reporting', action='store_true', help='For non-reporting entities')
@@ -58,25 +58,20 @@ def main():
 
     nr_count=0
     if args.list:
-        for entity in entities:
-            entry=""
-            try:
-                entry="%d,%s,%s,%s" %(entity['id'],entity['name'], entity['reporting'],entity['health_status'])
-            except KeyError:
-                entry="%d,%s,%s - host not sending data. dead, perhaps?" %(entity['id'],entity['name'], entity['reporting'])
-                nr_count+=1
+        entries = PrettyTable(["Name", "Reporting Status"])
+        entries.align["Name"]="l"
+        for entity in sorted(entities,key=lambda entity:entity["reporting"],reverse=True):
+            entry=[entity['name'], entity['reporting']]
+            if not entity['reporting']: nr_count+=1
+            entries.add_row(entry)
 
-            if args.non_reporting and not entity['reporting']: 
-                print entry
-            elif not args.non_reporting:
-                print entry
-
-        if nr_count>0: print "%d %s out of %d not reporting" % (nr_count,entity_type,len(entities))
+        print entries
+        if nr_count>0: print "{} {} out of {} not reporting" % (nr_count,entity_type,len(entities))
 
     elif args.delete:
         entities_to_delete=[(entity['id'],entity['name']) for entity in entities if not entity['reporting']]
         if len(entities_to_delete) > 0:
-            print "%d non-reporting %s found. Enter y to delete and any other key to skip deletion: " % (len(entities_to_delete), entity_type)
+            print "{} non-reporting {} found. Enter y to delete and any other key to skip deletion: " % (len(entities_to_delete), entity_type)
             choice=raw_input()
             if choice=="y":
                 for entity in entities_to_delete:
@@ -85,9 +80,10 @@ def main():
                         remove_entity(entity_type,entity[0])
                         nr_count+=1
                     except Exception as e:
-                        print "Unable to delete host: %s due to error: %s" % (entity[1],e)
-                if nr_count>0: print "%d hosts deleted from New Relic" % nr_count
-            else: print "Skipping deletion. Goodbye!"
+                        print "Unable to delete host: {} due to error: {}" % (entity[1],e)
+                if nr_count>0: print "{} hosts deleted from New Relic" % nr_count
+            else: 
+                print "Skipping deletion. Goodbye!"
             
 if __name__=="__main__":
     main()
