@@ -46,7 +46,6 @@ def get_entity(type,id):
 def main():
     parser = argparse.ArgumentParser(description='New Relic V2 API Interface')
     parser.add_argument('-l', '--list', nargs=1, required=True, choices=['servers','applications'], help='List all the entities')
-    parser.add_argument('-n', '--non-reporting', action='store_true', help='For non-reporting entities')
     parser.add_argument('-d', '--delete', action='store_true', help='Delete non-reporting entities')
     args=parser.parse_args()
 
@@ -66,7 +65,10 @@ def main():
             entries.add_row(entry)
 
         print entries
-        if nr_count>0: print "{} {} out of {} not reporting".format(nr_count,entity_type,len(entities))
+        if nr_count>0: 
+            print "{} {} out of {} are not reporting".format(nr_count,entity_type,len(entities))
+        else:
+            print "{} {} reporting".format(len(entities),entity_type)
 
     elif args.delete:
         entities_to_delete=[(entity['id'],entity['name']) for entity in entities if not entity['reporting']]
