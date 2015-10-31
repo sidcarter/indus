@@ -4,6 +4,10 @@ var casper = require('casper').create({
     logLevel: "info"
 });
 
+# drop options added by python
+casper.cli.drop("cli")
+casper.cli.drop("casper-path")
+
 var url="https://www.schwab.com/public/schwab/client_home";
 var username="";
 var password="";
@@ -27,7 +31,7 @@ casper.then(function() {
 			this.echo("Your balance: " + this.getHTML('#ctl00_wpm_ac_ac_rba_ctl00_dsv'));
 		});
 	} else {
-		this.echo("Looks like the login failed.");
+		this.echo("Login failed!");
         this.exit()
 	}
     
@@ -36,10 +40,6 @@ casper.then(function() {
 casper.then(function(){
     this.echo('Logging out.')
     this.click('li.logout a');
-});
-
-casper.then(function(){
-   this.echo('Back at ' + this.getCurrentUrl()) 
 });
 
 casper.run();
