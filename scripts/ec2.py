@@ -6,35 +6,17 @@
 import sys
 import traceback
 from argparse import ArgumentParser
-from boto import ec2
-from boto import rds2
-from boto import ses
+import boto3
 
 
 def ec2_info(region="us-east-1"):
-    conn = ec2.connect_to_region(region)
-    instances = conn.get_only_instances()
+    ec2 = boto3.resource('ec2')
+    instances = ec2.instances.filter()
     print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
     for x in instances:
-        try:
-            id=x.id
-            name=x.tags["Name"]
-            dns_name=x.public_dns_name
-            ip_addr=x.ip_address
-            priv_ip=x.private_ip_address
-            state=x.state
-        except AttributeError:
-            name="NoName"
-            ip_addr='none'
-            state='none'
-        except KeyError as ke:
-            continue
-            #  print ("KeyError: %s tag not set") % ke
-        info = '%s %s %s' % (id,name,state)
-        if (state=="running"):
-            info = '%s %s %s %s' %(info, dns_name, ip_addr, priv_ip)
-            print info
-
+        for key in x.tags:
+            if key['Key']=='Name': name = key['Value'] 
+        print x.instance_id,name,x.state['Name'],x.private_ip_address, x.instance_type, x.public_dns_name
 
 def ec2_terminate():
 	ec2_info('running')
@@ -42,12 +24,12 @@ def ec2_terminate():
 	print ('* for all, instance id or q to quit: ')
 	instance_to_terminate = raw_input()
 	if instance_to_terminate == "*":
-		areyousure = raw_input("Are you sure (y/n)? ")
-		if areyousure=="n":
+		choice = raw_input("Are you sure (y/n/q)? ")
+		if choice=="n":
 			print('No instances terminated.')
 			return
-		for i in conn.get_only_instances():
-			if (i.state=="running"):
+		for i in ec2.instances():
+			if (i.state['Name']=="running"):
 				i.terminate()
 				print 'Termination successful'
 	elif instance_to_terminate=="q":
