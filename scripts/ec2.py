@@ -4,19 +4,32 @@
 
 
 import sys
+import json
 import traceback
 from argparse import ArgumentParser
 import boto3
 
 
-def ec2_info(region="us-east-1"):
+def ec2_info(region=None):
     ec2 = boto3.resource('ec2')
     instances = ec2.instances.filter()
-    print ("Instance ID\tName\tDNS Name\tState\tPublic IP\tPrivate IP")
-    for x in instances:
-        for key in x.tags:
-            if key['Key']=='Name': name = key['Value'] 
-        print x.instance_id,name,x.state['Name'],x.private_ip_address, x.instance_type, x.public_dns_name
+    json_output = {}
+    json_output['hosts'] = []
+    for instance in instances:
+        host = {}
+        try:
+            for key in instance.tags:
+                if key['Key']=='Name': host['name'] = key['Value']
+            host['id'] = instance.instance_id
+            host['state'] = instance.state['Name']
+            host['private_ip'] = instance.private_ip_address
+            host['instance_size'] = instance.instance_type
+            host['public_hostname'] = instance.public_dns_name
+        except:
+            pass
+        json_output['hosts'].append(host)
+
+    print(json.dumps(json_output, indent=2))
 
 def ec2_terminate():
 	ec2_info('running')
@@ -25,14 +38,14 @@ def ec2_terminate():
 	instance_to_terminate = raw_input()
 	if instance_to_terminate == "*":
 		choice = raw_input("Are you sure (y/n/q)? ")
-		if choice=="n":
+		if choice == "n":
 			print('No instances terminated.')
 			return
 		for i in ec2.instances():
-			if (i.state['Name']=="running"):
+			if (i.state['Name'] == "running"):
 				i.terminate()
 				print 'Termination successful'
-	elif instance_to_terminate=="q":
+	elif instance_to_terminate == "q":
 		quit()
 	else:
 		conn.terminate_instances(instance_to_terminate)	
@@ -49,13 +62,13 @@ def ec2_start_stop():
 		print (e)
 
 
-def ec2_instance_update(region="us-east-1", filename=None,sg=None):
+def ec2_instance_update(region=None, filename=None, sg=None):
     # the file should be a comma separate file - instance name and id
     # if we can't split a file we throw an error
     secgroup=None
     for item in sgs:
-        if item.id==sg: 
-            secgroup=item.id
+        if item.id == sg:
+            secgroup = item.id
     if secgroup:
         for line in file.read().splitlines():
             try:
@@ -80,9 +93,9 @@ def get_conn(region):
     except Exception as e:
         sys.exit(e)
 
-def secgroups_add(security_group,filename,region="us-east-1"):
-    conn=get_conn(region)
-    sgs=conn.get_all_security_groups()
+def secgroups_add(security_group, filename, region=None):
+    conn = get_conn(region)
+    sgs = conn.get_all_security_groups()
     try:
         file = open(filename,'r')
     except Exception as e:
@@ -90,11 +103,10 @@ def secgroups_add(security_group,filename,region="us-east-1"):
 
     secgroup=None
     for item in sgs:
-        if item.id==security_group:
-            secgroup=item
+        if item.id == security_group:
+            secgroup = item
     if secgroup:
         for line in file.read().splitlines():
-#       print (type(line),line)
             try:
                 # the file should be a comma separate file - cidr, from_port and to_port
                 # if we can't split a file we throw an error
@@ -127,7 +139,7 @@ def security_groups_info(region="us-east-1"):
         print
 
 
-def clear_sg_rules(security_group,region="us-east-1"):
+def clear_sg_rules(security_group,region=None):
     conn=get_conn(region)
     sgs=conn.get_all_security_groups()
 
@@ -141,47 +153,51 @@ def clear_sg_rules(security_group,region="us-east-1"):
         for rule in secgroup.rules:
             for grant in rule.grants:
                 print("%s %s %s %s") % (rule.ip_protocol,rule.from_port,rule.to_port,grant.cidr_ip)
-                secgroup.revoke(rule.ip_protocol,rule.from_port,rule.to_port,grant.cidr_ip)
+                secgroup.revoke(rule.ip_protocol, rule.from_port, rule.to_port, grant.cidr_ip)
     else:
         print("Security group %s not found") % security_group
 
 
 def s3_info():
-    s3=boto.connect_s3()
+    s3 = boto.connect_s3()
     allBuckets = s3.get_all_buckets()
     for bucket in allBuckets:
         print bucket
 
 
 def ses_alerts():
-    ses_conn=ses.connect_to_region(default_region)
-    ses_send_quota= ses_conn.get_send_quota()
-    max_quota=float(ses_send_quota['GetSendQuotaResponse']['GetSendQuotaResult']['Max24HourSend'])
-    current_usage=float(ses_send_quota['GetSendQuotaResponse']['GetSendQuotaResult']['SentLast24Hours'])
-    send_stat=(current_usage/max_quota)*100
-    ses_stats=ses_conn.get_send_statistics()
+    ses_conn = ses.connect_to_region(default_region)
+    ses_send_quota = ses_conn.get_send_quota()
+    max_quota = float(ses_send_quota['GetSendQuotaResponse']['GetSendQuotaResult']['Max24HourSend'])
+    current_usage = float(ses_send_quota['GetSendQuotaResponse']['GetSendQuotaResult']['SentLast24Hours'])
+    send_stat = (current_usage/max_quota)*100
+    ses_stats = ses_conn.get_send_statistics()
     print("Your current send rate is %.0f%% of your max quota.") % send_stat
 
 def act_on_args():
     
     parser = ArgumentParser(description='Custom AWS Interface', prog="ec2.py")
-    parser.add_argument('-i', '--input-file', nargs=1, required=False, help='input file to be provided')
-    parser.add_argument('-a', '--add', nargs=1, help='add rules to a security group. e.g. -a sg-88basdfa')
-    parser.add_argument('-c', '--clear', nargs=1, help='clear all the rules in a security group. ')
-    parser.add_argument('-l', '--list', nargs=1, choices=['instances','security_groups'], help='list all entities e.g. -l instances')
+    parser.add_argument('-i', '--input-file', nargs=1, required=False,
+                        help='input file to be provided')
+    parser.add_argument('-a', '--add', nargs=1,
+                        help='add rules to a security group. e.g. -a sg-88basdfa')
+    parser.add_argument('-c', '--clear', nargs=1,
+                        help='clear all the rules in a security group. ')
+    parser.add_argument('-l', '--list', nargs=1, choices=['instances','security_groups'],
+                        help='list all entities e.g. -l instances')
     args=parser.parse_args()
     
     if args.list:
-        if args.list[0]=="instances":
+        if args.list[0] == "instances":
             ec2_info()
-        elif args.list[0]=="security_groups":
+        elif args.list[0] == "security_groups":
             security_groups_info()
     elif args.add and args.input_file:
-        filename=args.input_file[0]
-        security_group=args.add[0]
+        filename = args.input_file[0]
+        security_group = args.add[0]
         secgroups_add(security_group,filename)
     elif args.clear:
-        security_group=args.clear[0]
+        security_group = args.clear[0]
         clear_sg_rules(security_group)
     else:
         print("Maybe you didn't provide a file? Check your arguments.")
