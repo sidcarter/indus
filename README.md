@@ -1,9 +1,8 @@
 Indus
 =====
 
-A set of tools and configuration files that I end up using too often.  
-My dotfiles and any scripts that I end up creating.
-Directories contain their own README files.
+A set of tools and configuration files that I end up using often.  
+Dotfiles and any scripts that I end up creating.
 
 * playbooks/ - contains some playbooks that I created
 
