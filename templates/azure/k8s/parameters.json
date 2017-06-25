@@ -1,0 +1,33 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsNamePrefix": {
+      "value": "ku8ie"
+    },
+    "agentCount": {
+      "value": 2
+    },
+    "agentVMSize": {
+      "value": "Standard_A3"
+    },
+    "linuxAdminUsername": {
+      "value": "sk8er"
+    },
+    "orchestratorType": {
+      "value": "Kubernetes"
+    },
+    "masterCount": {
+      "value": 3
+    },
+    "sshRSAPublicKey": {
+      "value": ""
+    },
+    "servicePrincipalClientId": {
+      "value": ""
+    },
+    "servicePrincipalClientSecret": {
+      "value": ""
+    }
+  }
+}
