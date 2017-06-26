@@ -38,7 +38,7 @@ variable "default_image" {
     }
 }
 
-variable "agents_count" {
+variable "workers_count" {
     default = 3
 }
 
@@ -46,8 +46,8 @@ variable "masters_count" {
     default = 3
 }
 
-variable "agents_avail_set" {
-    default = "ku8ie-agents"
+variable "workers_avail_set" {
+    default = "ku8ie-workers"
 }
 
 variable "masters_avail_set" {
