@@ -3,6 +3,8 @@ resource "azurerm_availability_set" "agents_avail_set" {
     name                = "${var.agents_avail_set}"
     location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
+    
+    managed             = true
 
     tags {
         environment = "${var.azure_resource_group}"
