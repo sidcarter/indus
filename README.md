@@ -12,4 +12,4 @@ Dotfiles and any scripts that I end up creating.
 
 * packer/ - All the packer templates I used/created.
 
-* templates/ - Any useful templates
+* templates/ - Templates for some commonly used orchestrations and such.
