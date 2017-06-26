@@ -25,11 +25,12 @@ resource "azurerm_lb_backend_address_pool" "master_bep" {
 }
 
 resource "azurerm_lb_nat_rule" "master_nat_rule" {
-  resource_group_name            = "${azurerm_resource_group.rg.name}"
-  loadbalancer_id                = "${azurerm_lb.master_lb.id}"
-  name                           = "SSH Access"
-  protocol                       = "Tcp"
-  frontend_port                  = 5422
-  backend_port                   = 22
-  frontend_ip_configuration_name = "${var.cluster_name}-masters-feip"
+    count                   = "${var.masters_count}"
+    resource_group_name     = "${azurerm_resource_group.rg.name}"
+    loadbalancer_id         = "${azurerm_lb.master_lb.id}"
+    name                    = "nat-rule-${count.index + 1}"
+    protocol                = "Tcp"
+    frontend_port           = "${var.load_balancer_frontend_port + count.index}"
+    backend_port            = 22
+    frontend_ip_configuration_name = "${var.cluster_name}-masters-feip"
 }

@@ -1,7 +1,7 @@
 #let's create the default availability sets
 resource "azurerm_availability_set" "agents_avail_set" {
-    name = "${var.agents_avail_set}"
-    location = "${var.azure_region}"
+    name                = "${var.agents_avail_set}"
+    location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
 
     tags {
@@ -10,41 +10,42 @@ resource "azurerm_availability_set" "agents_avail_set" {
 }
 
 resource "azurerm_network_interface" "agent_nic" {
-    count = "${var.agents_count}"
-    name = "agent-${count.index + 1}-nic"
-    location = "${var.azure_region}"
+    count               = "${var.agents_count}"
+    name                = "agent-${count.index + 1}-nic"
+    location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
 
     ip_configuration {
-        name = "agent-${count.index + 1}-nic-config"
-        subnet_id = "${azurerm_subnet.backend.id}"
+        name        = "agent-${count.index + 1}-nic-config"
+        subnet_id   = "${azurerm_subnet.backend.id}"
         private_ip_address_allocation = "dynamic"
     }
 }
 
 resource "azurerm_managed_disk" "agent_data_disk" {
-    count = "${var.agents_count}"
-    name = "agent-${count.index + 1}-datadisk"
-    location = "${var.azure_region}"
-    resource_group_name = "${azurerm_resource_group.rg.name}"
-    storage_account_type = "Premium_LRS"
-    create_option = "Empty"
-    disk_size_gb = "511"
+    count       = "${var.agents_count}"
+    name        = "agent-${count.index + 1}-datadisk"
+    location    = "${var.azure_region}"
+    resource_group_name     = "${azurerm_resource_group.rg.name}"
+    storage_account_type    = "Premium_LRS"
+    create_option           = "Empty"
+    disk_size_gb            = "511"
 }
 
 resource "azurerm_virtual_machine" "agent" {
-    count = "${var.agents_count}"
-    name = "${var.cluster_name}-agent-${count.index + 1}"
-    location = "${var.azure_region}"
-    resource_group_name = "${azurerm_resource_group.rg.name}"
+    count                   = "${var.agents_count}"
+    name                    = "${var.cluster_name}-agent-${count.index + 1}"
+    location                = "${var.azure_region}"
+    resource_group_name     = "${azurerm_resource_group.rg.name}"
+    availability_set_id     = "${azurerm_availability_set.agents_avail_set.id}"
     network_interface_ids = ["${element(azurerm_network_interface.agent_nic.*.id, count.index)}"]
     vm_size = "Standard_DS12_v2"
 
     storage_image_reference {
-        publisher = "${var.default_image["publisher"]}"
-        offer = "${var.default_image["offer"]}"
-        sku = "${var.default_image["sku"]}"
-        version = "${var.default_image["version"]}"
+        publisher   = "${var.default_image["publisher"]}"
+        offer       = "${var.default_image["offer"]}"
+        sku         = "${var.default_image["sku"]}"
+        version     = "${var.default_image["version"]}"
     }
 
     storage_os_disk {
@@ -71,14 +72,14 @@ resource "azurerm_virtual_machine" "agent" {
     os_profile_linux_config {
         disable_password_authentication = false
         ssh_keys {
-            path = "/home/${var.azure_admin_username}/.ssh/authorized_keys"
-            key_data = "${var.ssh_pub_key}"
+            path        = "/home/${var.azure_admin_username}/.ssh/authorized_keys"
+            key_data    = "${var.ssh_pub_key}"
         }
     }
 
     tags {
         orchestrator = "kubernetes"
-        environment = "staging"
+        environment = "dev"
         type = "agent"
     }
 }

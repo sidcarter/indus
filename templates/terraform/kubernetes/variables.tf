@@ -9,6 +9,7 @@ variable "azure_resource_group" {}
 variable "azure_vnet_name" {}
 
 variable "cluster_name" {}
+variable "load_balancer_frontend_port" {}
 variable "azure_admin_username" {}
 variable "azure_admin_password" {}
 variable "ssh_pub_key" {}

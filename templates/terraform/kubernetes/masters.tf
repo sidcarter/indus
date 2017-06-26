@@ -1,8 +1,10 @@
 #let's create the default availability sets
 resource "azurerm_availability_set" "masters_avail_set" {
-    name = "${var.masters_avail_set}"
-    location = "${var.azure_region}"
+    name                = "${var.masters_avail_set}"
+    location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
+    
+    managed             = true
 
     tags {
         environment = "${var.azure_resource_group}"
@@ -10,37 +12,38 @@ resource "azurerm_availability_set" "masters_avail_set" {
 }
 
 resource "azurerm_network_interface" "master_nic" {
-    count = "${var.masters_count}"
-    name = "master-${count.index + 1}-nic"
-    location = "${var.azure_region}"
+    count               = "${var.masters_count}"
+    name                = "master-${count.index + 1}-nic"
+    location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
 
     ip_configuration {
-        name = "master-${count.index + 1}-nic-config"
-        subnet_id = "${azurerm_subnet.backend.id}"
+        name        = "master-${count.index + 1}-nic-config"
+        subnet_id   = "${azurerm_subnet.backend.id}"
         private_ip_address_allocation = "dynamic"
         load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.master_bep.id}"]
-        load_balancer_inbound_nat_rules_ids = ["${azurerm_lb_nat_rule.master_nat_rule.id}"]
+        load_balancer_inbound_nat_rules_ids = ["${element(azurerm_lb_nat_rule.master_nat_rule.*.id, count.index)}"]
     }
 }
 
 resource "azurerm_managed_disk" "master_data_disk" {
-    count = "${var.masters_count}"
-    name = "master-${count.index + 1}-datadisk"
-    location = "${var.azure_region}"
+    count               = "${var.masters_count}"
+    name                = "master-${count.index + 1}-datadisk"
+    location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
     storage_account_type = "Standard_LRS"
-    create_option = "Empty"
-    disk_size_gb = "511"
+    create_option       = "Empty"
+    disk_size_gb        = "511"
 }
 
 resource "azurerm_virtual_machine" "master" {
-    count = "${var.masters_count}"
-    name = "${var.cluster_name}-master-${count.index + 1}"
-    location = "${var.azure_region}"
-    resource_group_name = "${azurerm_resource_group.rg.name}"
-    network_interface_ids = ["${element(azurerm_network_interface.master_nic.*.id, count.index)}"]
-    vm_size               = "Standard_A3"
+    count                   = "${var.masters_count}"
+    name                    = "${var.cluster_name}-master-${count.index + 1}"
+    location                = "${var.azure_region}"
+    resource_group_name     = "${azurerm_resource_group.rg.name}"
+    availability_set_id     = "${azurerm_availability_set.masters_avail_set.id}"
+    network_interface_ids   = ["${element(azurerm_network_interface.master_nic.*.id, count.index)}"]
+    vm_size                 = "Standard_A3"
 
     storage_image_reference {
         publisher = "${var.default_image["publisher"]}"
@@ -80,7 +83,7 @@ resource "azurerm_virtual_machine" "master" {
 
     tags {
         orchestrator = "kubernetes"
-        environment = "staging"
+        environment = "dev"
         type = "master"
     }
 }
