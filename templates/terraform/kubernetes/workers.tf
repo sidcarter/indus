@@ -65,6 +65,9 @@ resource "azurerm_virtual_machine" "worker" {
         disk_size_gb    = "${element(azurerm_managed_disk.worker_data_disk.*.disk_size_gb, count.index)}"
     }
 
+    delete_os_disk_on_termination    = true
+    delete_data_disks_on_termination = true
+
     os_profile {
         computer_name  = "${var.cluster_name}-worker-${count.index + 1}"
         admin_username = "${var.azure_admin_username}"

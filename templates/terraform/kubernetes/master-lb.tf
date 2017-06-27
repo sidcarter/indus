@@ -4,6 +4,7 @@ resource "azurerm_public_ip" "master_lb_publicip" {
     name                = "${var.cluster_name}-masters-pip"
     location            = "${var.azure_region}"
     resource_group_name = "${azurerm_resource_group.rg.name}"
+    domain_name_label   = "${var.cluster_name}-control-lb"
     public_ip_address_allocation = "static"
 }
 
