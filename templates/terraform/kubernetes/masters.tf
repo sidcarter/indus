@@ -90,7 +90,4 @@ resource "azurerm_virtual_machine_extension" "master_extension" {
     }
     SETTINGS
 
-    tags {
-        environment = "Production"
-    }
 }

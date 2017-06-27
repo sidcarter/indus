@@ -88,3 +88,23 @@ resource "azurerm_virtual_machine" "worker" {
         type = "worker"
     }
 }
+
+resource "azurerm_virtual_machine_extension" "worker_extension" {
+    count                = "${var.workers_count}"
+    name                 = "worker-extension-${count.index + 1}"
+    location             = "${var.azure_region}"
+    resource_group_name  = "${azurerm_resource_group.rg.name}"
+    virtual_machine_name = "${element(azurerm_virtual_machine.worker.*.name, count.index)}"
+    publisher            = "Microsoft.Azure.Extensions"
+    type                 = "CustomScript"
+    type_handler_version = "2.0"
+    auto_upgrade_minor_version = true
+
+    settings = <<SETTINGS
+    {
+        "fileUris": ["https://gist.github.com/sidcarter/f9bc76d02ff315dfec2ae6094056c90e"],
+        "commandToExecute": "bash raw &"
+    }
+    SETTINGS
+
+}
