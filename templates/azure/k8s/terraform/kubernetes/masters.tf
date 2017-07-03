@@ -65,6 +65,11 @@ resource "azurerm_virtual_machine" "master" {
         }
     }
 
+    provisioner "file" {
+        source = "scripts/setup-docker.sh"
+        destination = "/tmp/setup-docker.sh"
+    }
+
     tags {
         orchestrator = "kubernetes"
         environment = "dev"
@@ -85,8 +90,7 @@ resource "azurerm_virtual_machine_extension" "master_extension" {
 
     settings = <<SETTINGS
     {
-        "fileUris": ["https://gist.github.com/sidcarter/f9bc76d02ff315dfec2ae6094056c90e"],
-        "commandToExecute": "bash raw &"
+        "commandToExecute": "bash /tmp/setup-docker.sh &"
     }
     SETTINGS
 
