@@ -1,0 +1,39 @@
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes"
+    },
+    "masterProfile": {
+      "count": 3,
+      "dnsPrefix": "k8s-lars",
+      "vnetSubnetId": "/subscriptions/3df9d76d-4c32-493e-a57a-977a06852cc2/resourceGroups/k8s-rg/providers/Microsoft.Network/virtualNetworks/k8s/subnets/K8MasterSN",
+      "firstConsecutiveStaticIP": "10.0.0.5",
+      "vmSize": "Standard_A3"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "larspool1",
+        "count": 3,
+        "vmSize": "Standard_DS4",
+        "vnetSubnetId": "/subscriptions/3df9d76d-4c32-493e-a57a-977a06852cc2/resourceGroups/k8s-rg/providers/Microsoft.Network/virtualNetworks/k8s/subnets/K8AgentSN",
+        "storageProfile": "ManagedDisks",
+        "availabilityProfile": "AvailabilitySet"
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "k8suser",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-rsa AAAAB3Nza k8suser@user.domain.com"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "221390af-0a9b-42bb-aa7b-534a86f8e4c5",
+      "secret": "e10c37fe-64c8-4c62-b652-c45c35ec03e6"
+    }
+  }
+}
