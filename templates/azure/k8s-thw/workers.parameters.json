@@ -1,0 +1,21 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmSize": {
+      "value": "Standard_DS4"
+    },
+    "numberOfNodes": {
+      "value": 4
+    },
+    "adminUsername": {
+      "value": "azruser"
+    },
+    "sshKeyData": {
+      "value": ""
+    },
+    "nodeNamePrefix": {
+      "value": "worker"
+    }
+  }
+}
