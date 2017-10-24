@@ -8,6 +8,9 @@
     "numberOfNodes": {
       "value": 4
     },
+    "nodeSubnet": {
+      "value": "WorkerSN",
+    },
     "adminUsername": {
       "value": "azruser"
     },
